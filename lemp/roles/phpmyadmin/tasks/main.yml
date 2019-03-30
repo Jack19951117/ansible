@@ -1,0 +1,11 @@
+- name: "Install phpmyadmin"
+  yum:
+   name: phpmyadmin
+   state: present
+
+- name: "link"
+  file:
+   src: /usr/share/phpMyAdmin 
+   dest: /usr/share/nginx/html/phpMyAdmin
+   state: link
+  notify: restart php-fpm

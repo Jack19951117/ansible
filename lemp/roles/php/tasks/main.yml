@@ -1,0 +1,39 @@
+- name: "install packet"
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - php
+    - php-mysql
+    - php-fpm
+
+- name: "Start service"
+  service:
+    name: php-fpm
+    state: started
+    enabled: yes
+
+- name: "Copy php.ini"
+  template:
+    src:  roles/php/templates/php.ini.j2
+    dest: /etc/php.ini
+  become: true
+
+- name: "Copy www.conf"
+  template:
+    src: roles/php/templates/www.conf.j2
+    dest: /etc/php-fpm.d/www.conf
+  become: true
+
+- name: "Change premission file php session"
+  file:
+    path: /var/lib/php/session
+    owner: nginx
+    group: nginx
+
+- name: "Copy file phpinfo"
+  template:
+    src: roles/php/templates/index.php.j2
+    dest: /usr/share/nginx/html/index.php
+  become: true
+  notify: Restart php

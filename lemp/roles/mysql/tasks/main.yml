@@ -1,0 +1,40 @@
+- name: "install mysql service"
+  yum:
+   name: "{{ item }}"
+   state: installed
+  with_items:
+   - mariadb
+   - mariadb-server
+   - python-setuptools
+   - python-pip
+
+- name: "Install pip"
+  pip:
+    name: PyMySql
+
+- name: "Start Service"
+  service:
+   name: mariadb
+   state: started
+   enabled: yes
+
+- name: "Update Passwd Root"
+  mysql_user:
+   name: root
+   host: "{{ item }}"
+   password: 1
+   state: present
+  with_items:
+   - "{{ ansible_hostname }}"
+   - 127.0.0.1
+   - ::1
+   - localhost
+  notify: Restart mariadb
+
+- name: "Fix error database"
+  template:
+    src: my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    mode: 0600
+  notify: Restart mariadb

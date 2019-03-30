@@ -1,0 +1,16 @@
+- name: Download WordPress
+  get_url:
+        url: https://wordpress.org/latest.tar.gz
+        dest: /root/latest.tar.gz
+
+- name: Move file
+  command: mv /root/latest.tar.gz /usr/share/nginx/html
+
+- name: Extract archive
+  unarchive:
+        src: /usr/share/nginx/html/latest.tar.gz
+        dest: /usr/share/nginx/html
+        remote_src: yes
+- name: set
+  command: chown -R nginx:nginx /usr/share/nginx/html/wordpress
+  notify: restart all
